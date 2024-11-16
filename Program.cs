@@ -19,45 +19,95 @@ namespace BankingApp
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
+
+        // Function to view all transactions for an account
+        static void ViewAllTransactions(ref User user, int accIndex)
+        {
+            Console.WriteLine($"{"ID"}{"Date",20}{"Type",20}{"Amount",20}");
+            foreach (var transaction in user.Accounts[accIndex].Transactions)
+            {
+                Console.WriteLine($"{transaction.Id}{transaction.Date,20}{transaction.Type,20}{transaction.Amount,20}");
+            }
+
+            Console.WriteLine("Press any key to exit");
+            Console.ReadLine();
+        }
+
+
         // Function to handle transactions for a single account
         static void HandleAccountTransactions(ref User user, int accIndex)
         {
-            Console.Clear();
-            Account acc = user.Accounts[accIndex];
-            Console.WriteLine($"Balance: {acc.Balance}");
-            Console.WriteLine(string.Join("", Enumerable.Repeat("-", 50)));
-            Console.WriteLine("Press 1 to depost amount");
-            Console.WriteLine("Press 2 to withdraw amount");
-            Console.WriteLine("Press any other key to go back");
-            Console.Write("Enter choice: ");
-            int op = Convert.ToInt32(Console.ReadLine());
+            List<int> ops = new List<int> {1, 2, 3, 4};
+            while (true)
+            {
 
-            if (op != 1 && op != 2)
-            {
-                return;
-            }
+                Console.Clear();
+                Account acc = user.Accounts[accIndex];
 
-            Console.WriteLine("Enter amount: ");
-            double amount = Convert.ToDouble(Console.ReadLine());
-            while (amount <= 0)
-            {
-                Console.WriteLine("Enter an amount greater than 0: ");
-                amount = Convert.ToDouble(Console.ReadLine());
-            }
+                Console.WriteLine($"Account: {acc.AccountNumber}");
+                Console.WriteLine($"Balance: {acc.Balance}");
 
-            if (op == 1)
-            {
-                user.Accounts[accIndex].Add(amount);
-                Console.WriteLine("Amount deposited successfully. Press any key to continue...");
-            } else
-            {
-                if (user.Accounts[accIndex].Balance < amount)
+                // Menu
+                Console.WriteLine(string.Join("", Enumerable.Repeat("-", 50)));
+                Console.WriteLine("Press 1 to depost amount");
+                Console.WriteLine("Press 2 to withdraw amount");
+                Console.WriteLine("Press 3 to view all transactions");
+                Console.WriteLine("Press 4 to go back");
+                Console.WriteLine("Press any other key to go back");
+                Console.WriteLine();
+                Console.Write("Enter choice: ");
+
+                // Operations based on user choice
+                int op = Convert.ToInt32(Console.ReadLine());
+
+                // Keep running the interface until user enters a valid choice
+                if (!ops.Contains(op)) {
+                    continue;
+                }
+
+                if (op == 4)
                 {
-                    Console.WriteLine("Insufficient balance to withdraw the specified amount. Press any key to continue...");
-                } 
+                    return;
+                }
+
+                
+                if (op == 3)
+                {
+                    ViewAllTransactions(ref user, accIndex);
+                    return;
+                }
+
+
+                Console.Write("Enter amount: ");
+                double amount = Convert.ToDouble(Console.ReadLine());
+                while (amount <= 0)
+                {
+                    Console.Write("Enter an amount greater than 0: ");
+                    amount = Convert.ToDouble(Console.ReadLine());
+                }
+
+                if (op == 1)
+                {
+                    user.Accounts[accIndex].Add(amount);
+                    Console.WriteLine("Amount deposited successfully. Press any key to continue...");
+                }
+                else
+                {
+                    if (user.Accounts[accIndex].Balance < amount)
+                    {
+                        Console.WriteLine("Insufficient balance to withdraw the specified amount. Press any key to continue...");
+                    }
+                    else
+                    {
+                        user.Accounts[accIndex].Withdraw(amount);
+                        Console.WriteLine("Amount withdrawn successfully. Press any key to continue...");
+                        Console.ReadLine();
+
+                    }
+                }
             }
 
-            
+
         }
 
         // Function to manage an existing account
@@ -74,7 +124,8 @@ namespace BankingApp
                 int op = Convert.ToInt32(Console.ReadLine());
                 HandleAccountTransactions(ref user, op - 1);
                 Console.ReadKey();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return;
             }
@@ -92,7 +143,7 @@ namespace BankingApp
             // Get initial ammount
             Console.Write("Enter initial deposit amount: ");
             double initialAmount = Convert.ToDouble(Console.ReadLine());
-            
+
             // Check if amount is valid
             while (initialAmount <= 0)
             {

@@ -17,8 +17,11 @@ namespace BankingApp
         private string accountNumber;
         private double balance = 0;
         private accountType accType;
+        private List<Transaction> transactions = new List<Transaction>();
         public string AccountNumber { get { return accountNumber; } }
         public double Balance { get { return balance;  }}
+
+        public List<Transaction> Transactions { get { return transactions; } }
         public Account(string accountNumber, accountType accType, double initialAmount) {
             this.accountNumber = accountNumber;
             this.accType = accType;
@@ -36,6 +39,12 @@ namespace BankingApp
             }
 
             balance -= amount;
+            Transaction newTransaction = new Transaction(
+                this.transactions.Count + 1,
+                TransactionType.withdrawal,
+                amount
+            );
+            this.transactions.Add( newTransaction );
             return true;
         }
 
@@ -48,6 +57,12 @@ namespace BankingApp
                 return false;
             }
             balance += amount;
+            Transaction newTransaction = new Transaction(
+                this.transactions.Count + 1,
+                TransactionType.deposit,
+                amount
+            );
+            this.transactions.Add(newTransaction);
             return true;
         }
     }

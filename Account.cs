@@ -18,6 +18,7 @@ namespace BankingApp
         private double balance = 0;
         private accountType accType;
         public string AccountNumber { get { return accountNumber; } }
+        public double Balance { get { return balance;  }}
         public Account(string accountNumber, accountType accType, double initialAmount) {
             this.accountNumber = accountNumber;
             this.accType = accType;
@@ -39,9 +40,15 @@ namespace BankingApp
         }
 
         // Function to add amount to the account
-        public void Add(double amount)
+        // Returns true if the amoount was added, and false otherwise
+        public bool Add(double amount)
         {
+            if (amount <= 0)
+            {
+                return false;
+            }
             balance += amount;
+            return true;
         }
     }
 }

@@ -25,12 +25,39 @@ namespace BankingApp
             Console.Clear();
             Account acc = user.Accounts[accIndex];
             Console.WriteLine($"Balance: {acc.Balance}");
-            Console.WriteLine("Press Esc to go back");
-            ConsoleKeyInfo cki = Console.ReadKey();
-            if (cki.Key == ConsoleKey.Escape)
+            Console.WriteLine(string.Join("", Enumerable.Repeat("-", 50)));
+            Console.WriteLine("Press 1 to depost amount");
+            Console.WriteLine("Press 2 to withdraw amount");
+            Console.WriteLine("Press any other key to go back");
+            Console.Write("Enter choice: ");
+            int op = Convert.ToInt32(Console.ReadLine());
+
+            if (op != 1 && op != 2)
             {
                 return;
             }
+
+            Console.WriteLine("Enter amount: ");
+            double amount = Convert.ToDouble(Console.ReadLine());
+            while (amount <= 0)
+            {
+                Console.WriteLine("Enter an amount greater than 0: ");
+                amount = Convert.ToDouble(Console.ReadLine());
+            }
+
+            if (op == 1)
+            {
+                user.Accounts[accIndex].Add(amount);
+                Console.WriteLine("Amount deposited successfully. Press any key to continue...");
+            } else
+            {
+                if (user.Accounts[accIndex].Balance < amount)
+                {
+                    Console.WriteLine("Insufficient balance to withdraw the specified amount. Press any key to continue...");
+                } 
+            }
+
+            
         }
 
         // Function to manage an existing account
@@ -42,9 +69,15 @@ namespace BankingApp
             {
                 Console.WriteLine($"{i + 1}: {user.Accounts[i].AccountNumber}");
             }
-            int op = Convert.ToInt32(Console.ReadLine());
-            HandleAccountTransactions(ref user, op - 1);
-            Console.ReadKey();
+            try
+            {
+                int op = Convert.ToInt32(Console.ReadLine());
+                HandleAccountTransactions(ref user, op - 1);
+                Console.ReadKey();
+            } catch (Exception e)
+            {
+                return;
+            }
         }
 
         // Function to create a new account for a user
